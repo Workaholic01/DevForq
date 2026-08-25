@@ -1,0 +1,32 @@
+{
+  "framework": "claude-sdlc",
+  "version": "0.2.0",
+  "installedAt": "2026-08-03T10:56:30.493Z",
+  "updatedAt": "2026-08-03T10:56:30.493Z",
+  "previousVersion": null,
+  "managedFiles": [
+    ".claude/agents/qa-engineer.md",
+    ".claude/agents/reqirements-analyst.md",
+    ".claude/agents/software-developer.md",
+    ".claude/agents/solution-architect.md",
+    ".claude/rules/architecture.md",
+    ".claude/rules/development.md",
+    ".claude/rules/security.md",
+    ".claude/rules/testing.md",
+    ".claude/skills/deliver-requirement/SKILL.md",
+    ".claude/skills/deliver-requirement/references/completion-gates.md",
+    ".claude/skills/project-onboarding/SKILL.md",
+    ".claude/skills/project-onboarding/references/knowledge-files.md",
+    ".claude/skills/refresh-project-knowledge/SKILL.md"
+  ],
+  "sharedFiles": [
+    "CLAUDE.md",
+    ".claude/settings.json",
+    ".gitignore"
+  ],
+  "projectOwnedPaths": [
+    ".claude/project-knowledge",
+    ".claude/delivery",
+    ".claude/skills/stack-*"
+  ]
+}

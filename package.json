@@ -1,0 +1,25 @@
+{
+  "name": "@twoday/claude-sdlc",
+  "version": "0.2.0",
+  "description": "Reusable Claude Code software-delivery framework",
+  "type": "module",
+  "bin": {
+    "claude-sdlc": "./bin/claude-sdlc.js"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "framework",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "validate": "node ./bin/claude-sdlc.js validate",
+    "doctor": "node ./bin/claude-sdlc.js doctor"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
