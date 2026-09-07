@@ -24,10 +24,13 @@ For implementation work:
 
 1. Analyse requirements.
 2. Determine whether architecture review is needed.
-3. Implement using existing repository patterns.
-4. Validate through independent QA.
-5. Return QA failures to Development.
-6. Report completion only after acceptable QA validation.
+3. Perform a design-time security review when architecture review occurs.
+4. Implement using existing repository patterns.
+5. Audit the implementation for security vulnerabilities.
+6. Validate through independent QA.
+7. Return security and QA failures to Development.
+8. Report completion only after acceptable security audit and QA
+   validation.
 
 ## Project context
 

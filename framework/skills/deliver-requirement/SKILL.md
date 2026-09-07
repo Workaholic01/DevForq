@@ -1,6 +1,6 @@
 ---
 name: deliver-requirement
-description: Coordinate end-to-end delivery of a software requirement through requirements analysis, conditional architecture, implementation, independent QA and correction loops.
+description: Coordinate end-to-end delivery of a software requirement through requirements analysis, conditional architecture, conditional design-time security review, implementation, mandatory security audit, independent QA and correction loops.
 argument-hint: "<requirement>"
 disable-model-invocation: true
 ---
@@ -91,7 +91,28 @@ the reason.
 
 Do not proceed if architecture returns BLOCKED.
 
-## 5. Implementation
+## 5. Design-time security review
+
+Invoke `security-analyst` with Review Type DESIGN_REVIEW when
+`solution-architect` was invoked in step 4.
+
+Provide:
+
+- `00-request.md`
+- `01-requirements.md`
+- `02-solution-design.md`
+
+Save its complete output as:
+
+`.claude/delivery/<requirement-id>/02b-security-design-review.md`
+
+If architecture was skipped, create that file with the status NOT_REQUIRED
+and the reason.
+
+Do not proceed if the security-analyst returns BLOCKED. Return the
+requirement to `solution-architect` with the findings.
+
+## 6. Implementation
 
 Invoke `software-developer`.
 
@@ -100,6 +121,7 @@ Tell it to read:
 - `00-request.md`
 - `01-requirements.md`
 - `02-solution-design.md`
+- `02b-security-design-review.md`
 - relevant project-knowledge files
 - applicable stack skills
 
@@ -109,38 +131,54 @@ Save the complete implementation result as:
 
 Do not advance when implementation reports BLOCKED or FAILED.
 
-## 6. Independent QA
+## 7. Security audit
 
-Invoke `qa-engineer`.
+Invoke `security-analyst` with Review Type IMPLEMENTATION_AUDIT.
 
 Tell it to read the complete delivery folder and inspect the current diff.
 
 Save the output as:
 
-`.claude/delivery/<requirement-id>/04-qa-attempt-1.md`
+`.claude/delivery/<requirement-id>/04-security-audit-attempt-1.md`
 
-## 7. Correction loop
+## 8. Independent QA
 
-When QA returns FAIL:
+Invoke `qa-engineer`.
 
-1. Pass the complete QA report to `software-developer`.
-2. Ask it to correct verified defects only.
-3. Save the result as `05-fix-attempt-<n>.md`.
-4. Invoke QA again.
-5. Save the result as `04-qa-attempt-<n+1>.md`.
+Tell it to read the complete delivery folder, including the security audit,
+and inspect the current diff.
+
+Save the output as:
+
+`.claude/delivery/<requirement-id>/05-qa-attempt-1.md`
+
+## 9. Correction loop
+
+When the security audit returns VULNERABLE or BLOCKED with an unresolved
+Critical or High severity finding, or when QA returns FAIL:
+
+1. Pass the complete security audit and/or QA report to `software-developer`.
+2. Ask it to correct verified defects and findings only.
+3. Save the result as `06-fix-attempt-<n>.md`.
+4. Re-invoke `security-analyst` when security findings were addressed. Save
+   as `04-security-audit-attempt-<n+1>.md`.
+5. Invoke QA again. Save the result as `05-qa-attempt-<n+1>.md`.
 
 Allow at most three correction cycles.
 
-After three unsuccessful cycles, stop and report FAILED with unresolved defects.
+After three unsuccessful cycles, stop and report FAILED with unresolved
+defects and findings.
 
-## 8. Final coordinator review
+## 10. Final coordinator review
 
 Inspect:
 
 - original requirement
 - accepted requirements
 - architecture decision
+- design-time security review
 - implementation reports
+- final security audit
 - final QA report
 - current diff
 - current Git status
@@ -151,7 +189,7 @@ Inspect:
 
 Confirm that every acceptance criterion has evidence.
 
-## 9. Save final report
+## 11. Save final report
 
 Create:
 
@@ -172,13 +210,16 @@ Use exactly one:
 - BLOCKED
 - FAILED
 
-DELIVERED requires QA PASS.
+DELIVERED requires QA PASS and a security audit verdict of SECURE or
+SECURE_WITH_RISKS with no unresolved Critical or High severity finding.
 
 ## Delivered Behaviour
 
 ## Acceptance Criteria Traceability
 
 ## Architecture Decision
+
+## Security Review Summary
 
 ## Files Changed
 

@@ -3,7 +3,8 @@
 A reusable Claude Code software-delivery framework. It installs a set of
 Claude Code agents, skills, and rules into any repository so that feature
 delivery follows a consistent workflow: requirements analysis → conditional
-architecture review → implementation → independent QA.
+architecture review → conditional design-time security review →
+implementation → security audit → independent QA.
 
 ## Requirements
 
@@ -70,7 +71,7 @@ Running `init` performs (see [`install()`](scripts/install.js:17)):
 - Copies managed framework files (agents, skills, rules) into `.claude/`
 - Creates project-owned directories (`.claude/project-knowledge/`, `.claude/delivery/`)
 - Merges `framework/templates/settings.json` into `.claude/settings.json`
-- Injects the framework block into `CLAUDE.md`
+- Writes the framework block and the initial project block into `CLAUDE.md`
 - Updates `.gitignore`
 - Writes an install manifest to `.claude/framework.json`
 
@@ -129,15 +130,16 @@ workflow (see [`deliver-requirement/SKILL.md`](framework/skills/deliver-requirem
 /deliver-requirement <describe your requirement>
 ```
 
-This command orchestrates four specialist subagents in the main
+This command orchestrates five specialist subagents in the main
 conversation:
 
-| Agent                                                                  | Role                                                                                                                                                                      |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`requirements-analyst`](framework/agents/requirements-analyst.md:1-8) | Converts the request into repository-aware, testable requirements. Does not implement code.                                                                               |
-| [`solution-architect`](framework/agents/solution-architect.md:1-8)     | Produces a repository-consistent technical design for changes spanning multiple components, contracts, persistence, security, or infrastructure. Does not implement code. |
-| [`software-developer`](framework/agents/software-developer.md:1-8)     | Implements the accepted requirements/design, modifies production code and tests, and runs focused validation.                                                             |
-| [`qa-engineer`](framework/agents/qa-engineer.md:1-8)                   | Independently validates acceptance criteria, regression risk, security, and test coverage against the final diff.                                                         |
+| Agent                                                                  | Role                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`requirements-analyst`](framework/agents/requirements-analyst.md:1-8) | Converts the request into repository-aware, testable requirements. Does not implement code.                                                                                                                                                                                                                       |
+| [`solution-architect`](framework/agents/solution-architect.md:1-8)     | Produces a repository-consistent technical design for changes spanning multiple components, contracts, persistence, security, or infrastructure. Does not implement code.                                                                                                                                         |
+| [`software-developer`](framework/agents/software-developer.md:1-8)     | Implements the accepted requirements/design, modifies production code and tests, and runs focused validation.                                                                                                                                                                                                     |
+| [`security-analyst`](framework/agents/security-analyst.md:1-8)         | Identifies the technology stack and audits designs and implemented changes against OWASP-aligned checks (dependencies, secrets, auth, input validation, infra hardening). Runs after `solution-architect` for design review and after `software-developer` as a mandatory pre-QA audit. Does not implement fixes. |
+| [`qa-engineer`](framework/agents/qa-engineer.md:1-8)                   | Independently validates acceptance criteria, regression risk, security, and test coverage against the final diff.                                                                                                                                                                                                 |
 
 Delivery artifacts (request, analysis, design, implementation, QA report)
 are recorded under `.claude/delivery/<requirement-id>/`.
@@ -151,7 +153,7 @@ cd /path/to/your-project
 claude-sdlc update
 ```
 
-`update` (see [`update()`](scripts/update.js:21-100)) backs up the existing
+`update` (see [`update()`](scripts/update.js:21-102)) backs up the existing
 installation, re-copies managed framework files, removes stale
 framework-managed files, re-merges settings, and updates only the framework
 block of `CLAUDE.md` — the project block created by onboarding and your
@@ -177,4 +179,10 @@ npm test
 ```
 
 This runs the Node.js built-in test runner (`node --test`, see
-[`package.json`](package.json:16-20)) against [`tests/`](tests).
+[`package.json`](package.json:16-20)) against [`tests/`](tests). The
+`tests/` directory does not yet contain any test files; add specs there
+as test coverage is introduced.
+
+## License
+
+MIT — see the `license` field in [`package.json`](package.json:24).
